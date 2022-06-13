@@ -67,6 +67,7 @@ class PcrExtractionStation(DnaSupplier):
         primers_supplier,
         homology_selector,
         blast_database=None,
+        blast_threshold=98,
         sequences=None,
         pcr_homology_length=25,
         max_overhang_length=40,
@@ -80,6 +81,7 @@ class PcrExtractionStation(DnaSupplier):
         self.name = name
         self.homology_selector = homology_selector
         self.blast_database = blast_database
+        self.blast_threshold = blast_threshold
         self.set_suppliers(primers_supplier)
         self.pcr_homology_length = pcr_homology_length
         self.max_overhang_length = max_overhang_length
@@ -116,7 +118,7 @@ class PcrExtractionStation(DnaSupplier):
             record = blast_sequence(
                 sequence,
                 self.blast_database,
-                perc_identity=98,
+                perc_identity=self.blast_threshold,
                 use_megablast=True,
                 word_size=self.blast_word_size,
             )
@@ -133,7 +135,7 @@ class PcrExtractionStation(DnaSupplier):
         record = blast_sequence(
             sequence,
             self.blast_database,
-            perc_identity=98,
+            perc_identity=self.blast_threshold,
             use_megablast=True,
             word_size=self.blast_word_size,
         )
