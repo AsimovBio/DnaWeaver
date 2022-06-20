@@ -1,4 +1,5 @@
 from io import StringIO
+import re
 from Bio.Seq import Seq
 from Bio import SeqIO
 import numpy as np

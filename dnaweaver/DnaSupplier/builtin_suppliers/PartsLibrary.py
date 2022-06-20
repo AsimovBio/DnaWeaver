@@ -84,7 +84,10 @@ class PartsLibrary(DnaSupplier):
         return sequence
 
     def additional_dict_description(self):
-        return {"flanks length": self.flanks_length}
+        return {
+            "class": self.class_description,
+            "operation_type": self.operation_type
+        }
 
     @classmethod
     def from_dict(cls, data):
@@ -161,9 +164,7 @@ class GoldenGatePartsLibrary(PartsLibrary):
         return sequence[:6] + "N" + sequence[7:-7] + "N" + sequence[-6:]
 
     def additional_dict_description(self):
-        return {
-            "class": "Golden Gate parts library",
-            "operation_type": "library",
+        return PartsLibrary.additional_dict_description(self) | {
             "flanks length": self.flanks_length,
         }
 

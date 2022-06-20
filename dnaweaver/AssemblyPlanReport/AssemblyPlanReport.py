@@ -17,7 +17,7 @@ class AssemblyPlanReport(
     def from_dnaweaver_quote(quote):
         plan = quote.assembly_plan_as_dict()
         sources = quote.source.dict_supply_graph()
-        return AssemblyPlan(plan, sources)
+        return AssemblyPlanReport(plan, sources)
 
     def to_steps_list(self):
         plan = deepcopy(self.plan)
