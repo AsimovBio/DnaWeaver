@@ -79,40 +79,40 @@ def blast_sequence(
             remove_subject = False
     else:
         close_subject = False
-    p = subprocess.Popen(
-        [
-            "blastn",
-            "-out",
-            xml_name,
-            "-outfmt",
-            "5",
-            "-num_alignments",
-            str(num_alignments),
-            "-query",
-            fasta_name,
-        ]
-        + (["-db", blast_db] if blast_db is not None else ["-subject", subject])
-        + (["-ungapped"] if ungapped else [])
-        + (["-task", "megablast"] if use_megablast else [])
-        + [
-            "-word_size",
-            str(word_size),
-            "-num_threads",
-            str(num_threads),
-            "-dust",
-            "no",
-            "-evalue",
-            "0.01",
-            "-perc_identity",
-            str(perc_identity),
-        ],
-        close_fds=True,
-        stderr=subprocess.PIPE,
-    )
-    res, _blast_err = p.communicate()
-    p.wait()
-    error = None
+
     for i in range(3):
+        p = subprocess.Popen(
+            [
+                "blastn",
+                "-out",
+                xml_name,
+                "-outfmt",
+                "5",
+                "-num_alignments",
+                str(num_alignments),
+                "-query",
+                fasta_name,
+            ]
+            + (["-db", blast_db] if blast_db is not None else ["-subject", subject])
+            + (["-ungapped"] if ungapped else [])
+            + (["-task", "megablast"] if use_megablast else [])
+            + [
+                "-word_size",
+                str(word_size),
+                "-num_threads",
+                str(num_threads),
+                "-dust",
+                "no",
+                "-evalue",
+                "0.01",
+                "-perc_identity",
+                str(perc_identity),
+            ],
+            close_fds=True,
+            stderr=subprocess.PIPE,
+        )
+        res, _blast_err = p.communicate()
+        p.wait()
         try:
             with open(xml_name, "r") as f:
                 res = list(NCBIXML.parse(f))
@@ -129,12 +129,14 @@ def blast_sequence(
                     return res[0]
                 else:
                     return res
-            break
-        except ValueError as err:
-            error = err
+        except ValueError:
+            if i == 2:
+                print('XML file was empty!')
+                print('fasta_name=', fasta_name)
+                print('xml_name=', xml_name)
+                print('sequence=', sequence)
+                raise
             time.sleep(0.1)
-    else:
-        raise ValueError("Problem reading the blast record: " + str(error))
 
 
 def make_blast_db(fasta_input, target):
