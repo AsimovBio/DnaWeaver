@@ -44,6 +44,7 @@ class DnaAssemblyStation(DnaSupplier):
         memoize=False,
         decomposer_class=None,
         a_star_auto_multiplier=2,
+        logger="bar",
         **solver_kwargs
     ):
         self.name = name
@@ -64,6 +65,7 @@ class DnaAssemblyStation(DnaSupplier):
             solver_kwargs["a_star_factor"] = (
                 a_star_auto_multiplier * self.min_basepair_price
             )
+        self.logger = logger
         self.solver_kwargs = solver_kwargs
 
     def get_quote_for_sequence_segment(
@@ -156,7 +158,6 @@ class DnaAssemblyStation(DnaSupplier):
         fine_grain=1,
         cut_spread_radius=0,
         a_star_factor=0,
-        logger=None,
     ):
         """Return the plan {(seg, ment): quote, ...} of the optimal strategy
         for the sequence's decomposition."""
@@ -168,7 +169,7 @@ class DnaAssemblyStation(DnaSupplier):
             fine_grain=fine_grain,
             a_star_factor=a_star_factor,
             cut_spread_radius=cut_spread_radius,
-            logger=logger,
+            logger=self.logger,
         )
         self._lattest_decomposer = decomposer  # for debugging
         best_cuts = decomposer.compute_optimal_cuts()
